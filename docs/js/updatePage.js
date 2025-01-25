@@ -109,7 +109,7 @@ function getStatusCode(weatherCode, isDay, wind_speed){
 
     if(weatherCode<=82){
         return { 
-            "imgPath":basePath + "white-Rainy.png",
+            "imgPath":basePath + "white-rainy.png",
             "status":"Rainy" 
         };
     }

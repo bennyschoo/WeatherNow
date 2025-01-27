@@ -21,11 +21,9 @@ function updateResults(){
     resultsList.innerHTML = "";
 
     for(let i=0; i<cityNames.length; i++){
-        if(searchValue == ""){
-            break;
-        }
+        
 
-        if(cityNames[i].toLowerCase().includes(searchValue.toLowerCase())){
+        if(cityNames[i].toLowerCase().substring(0,searchValue.length) == searchValue.toLowerCase() ||searchValue == "" ){
             let result = document.createElement("li");
             result.innerHTML = cityNames[i];
             result.classList = "nav-item text-secondary ms-1 my-2 result-item";

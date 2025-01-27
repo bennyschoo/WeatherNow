@@ -88,6 +88,8 @@ ul {
     opacity: 0;
     width:250px;
     transition: height 0.25s;
+    overflow-y: auto;
+    max-height: 300px;
 }
 
 #search-bar:focus ~ #search-suggestions{
@@ -107,4 +109,9 @@ main{
 
 .dropdown-item:hover{
     cursor: pointer;
+}
+
+#favourites-list{
+    overflow-y: auto;
+    max-height: 300px;
 }

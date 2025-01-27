@@ -26,20 +26,39 @@ async function getWeatherData(cityData, timeframe){
 }
 
 
-// This function uses the weather codes table which can be found at
-// the bottom of this page: https://open-meteo.com/en/docs
-function getStatusCode(weatherCode, isDay, wind_speed){
+// Index is used to determine what day the weather data is for, if it's not 
+// daily data, specify -1 for index.
+// For some status', the weather codes are used to determined the status of the weather.
+// The meaning of the weather codes can be found here: https://open-meteo.com/en/docs
+function getStatusCode(weatherData, index){
     let basePath = "./assets/img/"
-
-
-    if(weatherCode<=3){
-        if(wind_speed>28){
+    console.log(weatherData);
+   if(index==-1){
+        if(weatherData.weather_code<=77 && weatherData.weather_code>=72){
+            return { 
+                "imgPath":basePath + "white-snowing.png",
+                "status":"Snowing" 
+            };
+        }
+        if(weatherData.weather_code<=67 && weatherData.weather_code>=51){
+            return { 
+                "imgPath":basePath + "white-rainy.png",
+                "status":"Rainy" 
+            };
+        }
+        if(weatherData.wind_speed_10m>28){
             return { 
                 "imgPath":basePath + "white-windy.png",
                 "status":"Windy" 
             };
         }
-        if(isDay==1){
+        if(weatherData.cloud_cover>50){
+            return {
+                "imgPath":basePath + "white-cloudy.png",
+                "status":"Cloudy"
+            };
+        }
+        if(weatherData.is_day==1){
             return { 
                 "imgPath":basePath + "white-sunny.png",
                 "status":"Sunny" 
@@ -51,76 +70,32 @@ function getStatusCode(weatherCode, isDay, wind_speed){
                 "status":"Clear Skies" 
             };
         }
-    }
+   }
 
-
-
-    if(weatherCode<=48){
-        if(wind_speed>30){
+   if(index>-1){
+        if(weatherData.weather_code[index]<=77 && weatherData.weather_code[index]>=72){
+            return { 
+                "imgPath":basePath + "white-snowing.png",
+                "status":"Snowing" 
+            };
+        }
+        if(weatherData.weather_code[index]<=67 && weatherData.weather_code[index]>=51){
+            return { 
+                "imgPath":basePath + "white-rainy.png",
+                "status":"Rainy" 
+            };
+        }
+        if(weatherData.wind_speed_10m_max[index]>22){
             return { 
                 "imgPath":basePath + "white-windy.png",
                 "status":"Windy" 
             };
         }
         return { 
-            "imgPath":basePath + "white-cloudy.png",
-            "status":"Cloudy" 
+            "imgPath":basePath + "white-sunny.png",
+            "status":"Sunny" 
         };
-    }
-
-
-    if(weatherCode<=67){
-        return { 
-            "imgPath":basePath + "white-rainy.png",
-            "status":"Rainy" 
-        };
-    }
-
-
-    if(weatherCode<=77){
-        // 71 or 70 is very little snow, ignore and present sunny
-        if(weatherCode==70 || weatherCode==71){
-            if(wind_speed>28){
-                return { 
-                    "imgPath":basePath + "white-windy.png",
-                    "status":"Windy" 
-                };
-            }
-            if(isDay==1){
-                return { 
-                    "imgPath":basePath + "white-sunny.png",
-                    "status":"Sunny" 
-                };
-            }
-            else{
-                return { 
-                    "imgPath":basePath + "white-moon.png",
-                    "status":"Clear Skies" 
-                };
-            }
-        }
-        return { 
-            "imgPath":basePath + "white-snowing.png",
-            "status":"Snowing" 
-        };
-    }
-
-
-
-    if(weatherCode<=82){
-        return { 
-            "imgPath":basePath + "white-rainy.png",
-            "status":"Rainy" 
-        };
-    }
-
-
-
-    if(weatherCode<=99){
-        return { 
-            "imgPath":basePath + "white-snowing.png",
-            "status":"Snowing" 
-        };
+        
     }
 }
 
@@ -166,7 +141,7 @@ function updateCurrentStatus(weatherData){
     currentStatus.classList = "m-auto my-sm-4 my-2";
     currentTemp.classList = "m-auto my-sm-4 my-2";
 
-    currentStatus.textContent = getStatusCode(weatherData.current.weather_code, weatherData.current.is_day).status;
+    currentStatus.textContent = getStatusCode(weatherData.current, -1).status;
     currentTemp.textContent = weatherData.current.temperature_2m + weatherData.current_units.temperature_2m;
 
     currentStatusContainer.appendChild(currentStatus);
@@ -179,7 +154,7 @@ function updateWeatherIcon(weatherData){
     let statusIcon = document.querySelector("#weather-status-icon");
     let weatherCode = weatherData.current.weather_code;
     let isDay = weatherData.current.is_day;
-    let status = getStatusCode(weatherCode, isDay);
+    let status = getStatusCode(weatherData.current, -1);
     statusIcon.src = status.imgPath;
 }
 
@@ -222,7 +197,6 @@ async function updateSevenDay(cityData){
     sevenDayContainer.innerHTML = '';
     let weatherData = await getWeatherData(cityData, "sevenday");
     let sevenDayItems = [];
-    console.log(weatherData);
 
     for(let i=0; i<7; i++){
         sevenDayItems[i] = document.createElement("div");
@@ -245,7 +219,7 @@ async function updateSevenDay(cityData){
         dataDiv.appendChild(imgSection);
 
         let img = document.createElement("img");
-        let status = getStatusCode(weatherData.daily.weather_code[i], 1, weatherData.daily.wind_speed_10m_max[i]);
+        let status = getStatusCode(weatherData.daily, i);
         img.src = status.imgPath;
         img.alt = "'Current Date' weather status icon";
         img.classList = "sevenday-img m-3";
@@ -270,7 +244,7 @@ async function updateSevenDay(cityData){
         stats[1].textContent = "Low: " + weatherData.daily.temperature_2m_min[i] + weatherData.daily_units.temperature_2m_min;
         stats[2].textContent = "Precipitation: " + weatherData.daily.precipitation_sum[i] + weatherData.daily_units.precipitation_sum;
         stats[3].textContent = "Snowfall: " + weatherData.daily.snowfall_sum[i] + weatherData.daily_units.snowfall_sum;
-        stats[4].textContent = "Wind Speed: " + weatherData.daily.wind_speed_10m_max[i] + weatherData.daily_units.wind_speed_10m_max;
+        stats[4].textContent = "Wind Speed: " + Math.round(weatherData.daily.wind_speed_10m_max[i]) + weatherData.daily_units.wind_speed_10m_max;
     }
 }
 

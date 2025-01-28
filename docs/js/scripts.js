@@ -3,6 +3,7 @@
 // 
 // 
 var currentCity = "Halifax";
+var updatePage;
 fetch("./js/data.json").then(response => response.json()).then( data => {
     var cities = data;
 
@@ -255,7 +256,7 @@ fetch("./js/data.json").then(response => response.json()).then( data => {
         }
     }
 
-    function updatePage(cityName){
+updatePage= function(cityName){
         currentCity = cityName;
         updateWeatherSection(getCityData(cityName));
         updateSevenDay(getCityData(cityName));

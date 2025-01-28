@@ -45,10 +45,12 @@ function updateResults(){
     updatePosition();
 }
 
+//appropriate event listeners for each function
 searchInput.addEventListener("input", updateResults);
 searchInput.addEventListener("focus", updateResults);
 window.addEventListener("resize", updatePosition);
-window.addEventListener("load", updatePosition);
+//delay is added to ensure the rest of the page loads before the position is updated
+window.addEventListener("load", () => {setTimeout(updatePosition, 200);});
 
 //Make sure the search suggestions stop displaying when not focused on the search bar
 searchInput.addEventListener("focus", () => {

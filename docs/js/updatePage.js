@@ -31,9 +31,8 @@ async function getWeatherData(cityData, timeframe){
 // For some status', the weather codes are used to determined the status of the weather.
 // The meaning of the weather codes can be found here: https://open-meteo.com/en/docs
 function getStatusCode(weatherData, index){
-    let basePath = "./assets/img/"
-    console.log(weatherData);
-   if(index==-1){
+    let basePath = "./assets/"
+    if(index==-1){
         if(weatherData.weather_code<=77 && weatherData.weather_code>=72){
             return { 
                 "imgPath":basePath + "white-snowing.png",
@@ -70,9 +69,9 @@ function getStatusCode(weatherData, index){
                 "status":"Clear Skies" 
             };
         }
-   }
+    }
 
-   if(index>-1){
+    if(index>-1){
         if(weatherData.weather_code[index]<=77 && weatherData.weather_code[index]>=72){
             return { 
                 "imgPath":basePath + "white-snowing.png",
@@ -205,9 +204,11 @@ async function updateSevenDay(cityData){
 
     
         let dayHeader = document.createElement("h4");
-        let weekday = new Date(weatherData.daily.time[i]+"T03:24:00").toLocaleDateString('en-US', {weekday: 'long'});
-        let month = new Date(weatherData.daily.time[i]+"T03:24:00").toLocaleDateString('en-US', {month: 'short'});
-        dayHeader.innerText = weekday + ", " + month + " " + new Date(weatherData.daily.time[i]).getDate();
+        let weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        let months = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+        let weekday = weekdays[new Date(weatherData.daily.time[i]).getDay()];
+        let month = months[new Date(weatherData.daily.time[i]).getMonth()];
+        dayHeader.innerText = weekday + ", " + month + " " + (new Date(weatherData.daily.time[i]).getDate() + 1);
         sevenDayItems[i].appendChild(dayHeader);
 
         let dataDiv = document.createElement("div");

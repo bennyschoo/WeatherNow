@@ -2,9 +2,8 @@
 // This is the code for updating the weather data on the page
 // 
 // 
-
+var currentCity = "Halifax";
 fetch("./js/data.json").then(response => response.json()).then( data => {
-    var currentCity = "Halifax";
     var cities = data;
 
     function getCityData(city){
@@ -350,6 +349,7 @@ fetch("./js/data.json").then(response => response.json()).then( data => {
     });
     updatePosition();
 
+});
 
 // 
 // This is the code for the favourites feature
@@ -448,4 +448,3 @@ fetch("./js/data.json").then(response => response.json()).then( data => {
     window.addEventListener('load', () => {setTimeout(updateButtonIcon, 100)});
     window.addEventListener('load', () => {setTimeout(fillFavouritesList, 100)});
 
-});
